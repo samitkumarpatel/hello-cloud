@@ -1,0 +1,34 @@
+spring:
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: internal-api
+            uri: http://localhost:8081
+            predicates:
+              - Path= /api, /api/**
+            filters:
+              - RewritePath=/api, /internal-api
+              - RewritePath=/api/(?<segment>.*), /internal-api/$\{segment}
+
+  application:
+    name: hello-cloud-fe
+    internal:
+      host: http://localhost:8081
+      context-path: /internal-api
+  mvc:
+    problemdetails:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+server:
+  port: 8080

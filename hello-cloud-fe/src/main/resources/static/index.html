@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Hello Cloud</title>
+        <style>
+            body {
+                margin-left: auto;
+                margin-right: auto;
+                width: 50%;
+                padding-top: 70px;
+            }
+            ul {
+                list-style-type: none;
+                padding: 0;
+            }
+            li {
+                padding: 10px;
+                margin-top: 10px;
+                display: flex;
+                gap: 10px;
+            }
+            button {
+                padding: 10px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            input[type="text"] {
+                padding: 10px;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+            }
+        </style>
+    </head>
+    <body>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+        <div id="app">
+            <h1>{{ message }}</h1>
+            <p>Java (Spring Boot) application running in a Docker container</p>
+            <hr/>
+            <div v-if="Object.keys(error).length > 0">
+                <ul style="color: red">
+                    <li v-for="(value, key) in error">
+                        <p>{{ key }}: {{ value }}</p>
+                    </li>
+                </ul>
+                <hr/>
+            </div>
+            <ul>
+                <li>
+                    <button @click="getClick">GET</button>
+                    <p>{{ getResult }}</p>
+                </li>
+                <li>
+                    <form @submit.prevent="postSubmit()" style="display: flex; gap: 10px;">
+                        <input type="text" v-model="postRequest">
+                        <button>POST</button>
+                        <p>{{ postResult }}</p>
+                    </form>
+
+                </li>
+                <li>
+                    <form @submit.prevent="putSubmit()" style="display: flex; gap: 10px;">
+                        <input type="text" v-model="putRequest">
+                        <button>PUT</button>
+                        <p>{{ putResult }}</p>
+                    </form>
+                </li>
+                <li>
+                    <form @submit.prevent="patchSubmit()" style="display: flex; gap: 10px;">
+                        <input type="text" v-model="patchRequest">
+                        <button>PATCH</button>
+                        <p>{{ patchResult }}</p>
+                    </form>
+
+                </li>
+                <li>
+                    <button @click="deleteClick">DELETE</button>
+                    <p>{{ deleteResult }}</p>
+                </li>
+            </ul>
+        </div>
+
+        <script>
+            const { createApp, ref, onMounted } = Vue
+
+            createApp({
+                setup() {
+                    const message = ref('Cloud Container')
+                    const getResult = ref(null)
+                    const postResult = ref(null)
+                    const putResult = ref(null)
+                    const patchResult = ref(null)
+                    const deleteResult = ref(null)
+
+                    const postRequest = ref('default value')
+                    const putRequest = ref('default')
+                    const patchRequest = ref('default')
+
+                    const error = ref({})
+
+                    const apiHost = ref('/api')
+
+                    const getClick = () => {
+                        fetch(`${apiHost.value}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`Network response was not ok with statusCode ${response.status}`)
+                                }
+                                return response.json()
+                            })
+                            .then(data => {
+                                getResult.value = data
+                            })
+                            .catch(error => {
+                                error.value['GET /'] = error.message
+                            })
+                    }
+
+                    const postSubmit = () => {
+                        fetch(`${apiHost.value}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ message: postRequest.value })
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`Network response was not ok with statusCode ${response.status}`)
+                                }
+                                return response.json()
+                            })
+                            .then(data => {
+                                postResult.value = data
+                            })
+                            .catch(error => {
+                                error.value['POST /'] = error.message
+                            })
+                    }
+
+                    const putSubmit = () => {
+                        fetch(`${apiHost.value}/1`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ message: putRequest.value })
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`Network response was not ok with statusCode ${response.status}`)
+                                }
+                                return response.json()
+                            })
+                            .then(data => {
+                                putResult.value = data
+                            })
+                            .catch(error => {
+                                error.value['PUT /'] = error.message
+                            })
+                    }
+
+                    const patchSubmit = () => {
+                        fetch(`${apiHost.value}/1`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ message: patchRequest.value })
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`Network response was not ok with statusCode ${response.status}`)
+                                }
+                                return response.json()
+                            })
+                            .then(data => {
+                                patchResult.value = data
+                            })
+                            .catch(error => {
+                                error.value['PATCH /'] = error.message
+                            })
+                    }
+
+                    const deleteClick = () => {
+                        fetch(`${apiHost.value}/1`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`Network response was not ok with statusCode ${response.status}`)
+                                }
+                                return response.json()
+                            })
+                            .then(data => {
+                                deleteResult.value = data
+                            })
+                            .catch(error => {
+                                error.value['DELETE /'] = error.message
+                            })
+                    }
+
+                    onMounted(() => {})
+
+                    return {
+                        message, getResult, postResult, putResult, patchResult, deleteResult, postRequest, putRequest, patchRequest, error, getClick, postSubmit, putSubmit, patchSubmit, deleteClick
+                    }
+                }
+            }).mount('#app')
+        </script>
+    </body>
+</html>

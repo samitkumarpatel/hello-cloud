@@ -1,0 +1,24 @@
+services:
+
+  internal:
+    image:  ghcr.io/samitkumarpatel/cloud-container-internal:220120251529
+    environment:
+      server.port: 8081
+    networks:
+      - cloud-container
+
+  external:
+    image: ghcr.io/samitkumarpatel/cloud-container-external:main
+    ports:
+      - published: 8080
+        target: 8080
+        mode: host
+    environment:
+      server.port: 8080
+      spring.application.cloud-container-internal.host: http://localhost:8082
+      spring.application.cloud-container-internal.context-path: /api
+    networks:
+      - cloud-container
+
+networks:
+  cloud-container:
