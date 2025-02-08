@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - '.github/workflows/main.yml'
-      - 'cloud-container-*/**'
+      - 'hello-coud-*/**'
 jobs:
   docker-image-build:
     runs-on: "ubuntu-latest"
