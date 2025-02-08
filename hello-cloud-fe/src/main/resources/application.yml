@@ -4,7 +4,7 @@ spring:
       mvc:
         routes:
           - id: internal-api
-            uri: http://localhost:8081
+            uri: ${INTERNAL_API_HOST:http://localhost:8081}
             predicates:
               - Path= /api, /api/**
             filters:
